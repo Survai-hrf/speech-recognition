@@ -1,6 +1,8 @@
 import argparse
 import urllib.request
 import os
+import json
+import requests
 import shutil
 import mimetypes
 from cv2 import VideoCapture
@@ -8,6 +10,7 @@ import traceback
 mimetypes.init()
 
 from openai_whisper.src.transcribe import perform_speech_to_text
+from connect_download.connect_and_download import connect_and_download, delete_message
 
 
 def parse_args():
@@ -17,7 +20,6 @@ def parse_args():
     '''
     parser = argparse.ArgumentParser(
         description='OpenAI Whisper - transcribe the speech in a video into english text')
-    parser.add_argument('mux_url', help='mux url, writes out detections.json to processed/(VIDEO_ID)/')
     parser.add_argument('video_id', help='unique id for saving video and video info')
     parser.add_argument('--folder', default='', help='path/to/folder/of/videos')
 
@@ -25,19 +27,39 @@ def parse_args():
     return args
 
 
-def process_video(mux_url, video_id, folder):
+def process_video(video_id, folder):
 
-    os.makedirs(f'temp_videodata_storage', exist_ok=True)
+    while True: 
+        
+        os.makedirs(f'temp_videodata_storage', exist_ok=True)
 
-        # if not using folders, download video from mux
-    if folder == '':
-        urllib.request.urlretrieve(f"{mux_url}?download={video_id}.mp4", f'temp_videodata_storage/{video_id}.mp4') 
-        print('downloading complete')
+        if folder == '':
+            video_id, resp, receipt_handle = connect_and_download(args.folder)
 
-    perform_speech_to_text(video_id, folder)
+        if resp == 0:
+            print("No messages")
+            continue
 
-    shutil.rmtree('temp_videodata_storage')
 
+        print('initializing speech to text model for inference...')
+        perform_speech_to_text(video_id, folder)
+
+
+        with open(f'{video_id}_transcription.json') as file:
+            transcript = json.load(file)
+
+        if folder == '':
+            #send json to web
+            API_ENDPOINT = "https://glimpse-weld.vercel.app/api/ai"
+            r = requests.post(url=API_ENDPOINT, json=transcript)
+            #print(r.content)
+
+            delete_message(receipt_handle)
+            #os.remove(f'{video_id}_transcription.json')
+            shutil.rmtree('temp_videodata_storage')
+            print('message deleted')
+        else:
+            break
 
 
 
@@ -47,7 +69,7 @@ if __name__ == '__main__':
 
     # if no folder is provided
     if args.folder == '':
-        process_video(args.mux_url, args.video_id, args.folder)
+        process_video(args.video_id, args.folder)
 
     else:
 
@@ -69,7 +91,7 @@ if __name__ == '__main__':
                         try:
                             capture = VideoCapture(filepath)
                             print(filepath)
-                            process_video('', os.path.splitext(file)[0], filepath)
+                            process_video(os.path.splitext(file)[0], filepath)
                         except Exception as e:
                             print(f"broken video: {filepath}")
                             print(e)
