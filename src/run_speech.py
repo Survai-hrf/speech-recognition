@@ -1,5 +1,4 @@
 import argparse
-import urllib.request
 import os
 import json
 import requests
@@ -36,26 +35,26 @@ def process_video(video_id, folder):
         if folder == '':
             video_id, resp, receipt_handle = connect_and_download(args.folder)
 
-        if resp == 0:
-            print("No messages")
-            continue
-
+            if resp == 0:
+                print("No messages")
+                continue
+    
 
         print('initializing speech to text model for inference...')
         perform_speech_to_text(video_id, folder)
 
 
-        with open(f'{video_id}_transcription.json') as file:
+        with open(f'{video_id}_transcript.json') as file:
             transcript = json.load(file)
 
         if folder == '':
             #send json to web
             API_ENDPOINT = "https://glimpse-weld.vercel.app/api/ai"
             r = requests.post(url=API_ENDPOINT, json=transcript)
-            #print(r.content)
+            print(r.content)
 
             delete_message(receipt_handle)
-            #os.remove(f'{video_id}_transcription.json')
+            #os.remove(f'{video_id}_transcript.json')
             shutil.rmtree('temp_videodata_storage')
             print('message deleted')
         else:
@@ -72,7 +71,6 @@ if __name__ == '__main__':
         process_video(args.video_id, args.folder)
 
     else:
-
         #iterate folder and all subfolders looking for videos
         for subdir, dirs, files in os.walk(args.folder):
             print('iterating all files in sub directories looking for videos...')
@@ -91,7 +89,7 @@ if __name__ == '__main__':
                         try:
                             capture = VideoCapture(filepath)
                             print(filepath)
-                            process_video(os.path.splitext(file)[0], filepath)
+                            process_video(video_id=os.path.splitext(file)[0], folder = filepath)
                         except Exception as e:
                             print(f"broken video: {filepath}")
                             print(e)

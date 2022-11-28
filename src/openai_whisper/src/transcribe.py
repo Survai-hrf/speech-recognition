@@ -8,7 +8,7 @@ def perform_speech_to_text(video_id, folder):
 
     output_data = {}
     
-    video_id = f'{video_id}.mp4'
+    video = f'{video_id}.mp4'
 
     # if folder of videos is not specified default to:
     if folder == '':
@@ -17,7 +17,7 @@ def perform_speech_to_text(video_id, folder):
         video = folder
 
     # create file name for audio
-    audio_file = video_id.split('.')[0]
+    audio_file = video.split('.')[0]
     audio_file = f'{audio_file}.wav'
 
     # split audio from video file
@@ -25,7 +25,7 @@ def perform_speech_to_text(video_id, folder):
     clip.audio.write_audiofile(audio_file)
 
     # load speech to text model
-    model = whisper.load_model('base', device='cpu')
+    model = whisper.load_model('base')
 
     # detect language
     audio = whisper.load_audio(audio_file)
@@ -38,12 +38,13 @@ def perform_speech_to_text(video_id, folder):
     if language != {'en'}:
         options = dict(beam_size=5, best_of=5)
         translate_options = dict(task='translate', **options)
-        translate_result = model.transcribe(audio_file, **translate_options)
+        result = model.transcribe(audio_file, **translate_options)
         original_result = model.transcribe(audio_file)
 
         # add data to dictionary
-        output_data['language'] = translate_result['language']
-        output_data['translation'] = translate_result['text']
+        output_data['language'] = result['language']
+        output_data['translation'] = result['text']
+        output_data['segemnts'] = result['segments']
         output_data['original'] = original_result['text']
 
     else:
@@ -52,9 +53,19 @@ def perform_speech_to_text(video_id, folder):
         # add data to dictionary
         output_data['language'] = result['language']
         output_data['translation'] = result['text']
+        output_data['segments'] = result['segments']
+
+    
+    # convert segments to integers
+    '''
+    for segment in result['segments']:
+        segment['start'] = int(segment['start'])
+        segment['end'] = int(segment['end'])
+    '''
+
 
     # export data to json file
-    with open(f'{video_id}_transcription.json', 'w+') as file:
+    with open(f'{video_id}_transcript.json', 'w+') as file:
         json.dump(output_data, file)
 
     # remove audio file

@@ -1,7 +1,11 @@
-FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
+FROM python:3.9
 
-ENV PYTHON_VERSION=3.9
-ENV POETRY_VERSION=1.2.0
-ENV POETRY_VENV=/app/.venv
+WORKDIR /speech_to_text
 
-CMD ['python', 'src/run_speech.py']
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+COPY ./src ./src
+
+CMD ["python", "./src/run_speech.py", "0", "--folder", "test_files"]
