@@ -1,21 +1,19 @@
 FROM nvidia/cuda:11.3.1-base-ubuntu20.04
 
-# install python 3.9
-RUN sudo apt-get update -y
-RUN sudo apt-get install -y python=3.9
+RUN apt-get update -y
+RUN apt-get install -y python3.9
+RUN apt-get -y install git
+RUN apt-get -y install pip
+RUN apt-get install ffmpeg libsm6 libxext6 -y
 
-# create directory to copy repo
-WORKDIR /speech_to_text
-
-# copy requirements and env
-COPY requirements.txt .
+COPY src/ /workdir/
+RUN ls --recursive /workdir/
+COPY test_files/ /workdir/
+RUN ls --recursive /workdir/
 COPY .env .
+COPY languages.json .
+COPY requirements.txt .
 
-# install dependencies
 RUN pip install -r requirements.txt
 
-# copy src files
-COPY ./src ./src
-
-# run command to perform speech to text
-CMD ["python", "./src/run_speech.py"]
+CMD ["python3", "src/run_speech.py", "--folder", "test_files", "--save-output"]

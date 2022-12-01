@@ -4,72 +4,89 @@ import json
 import os
 
 
-def perform_speech_to_text(video_id, folder, save_output):
+def format_data(result, video_id):
+    '''
+    Takes the raw output from the speech to text model and reshapes data into proper format.
+    '''
+    output = {}
+    segments = []
 
-    output_data = {}
-    
-    video = f'{video_id}.mp4'
+    with open('languages.json') as file:
+        languages = json.load(file)
+
+    # store needed data for each segment in dictionary and append to list
+    for i in result['segments']:
+        segments.append({
+            'start': int(i['start']),
+            'text': i['text']
+        })
+
+    # build final dictionary 
+    output['uniqueId'] = video_id
+    output['originalLanguage'] = languages.get(result['language'])
+    output['transcription'] = result['text']
+    output['segments'] = segments
+
+    return output
+
+
+def perform_speech_to_text(video_id, folder, save_output):
+    '''
+    Runs speech to text model on a given video and returns data in proper format.
+    '''
+    video_file = f'{video_id}.mp4'
     audio_file = f'{video_id}.wav'
+
+
 
     # if folder of videos is not specified default to:
     if folder == '':
-        video = f'temp_videodata_storage/{video}'
+        video_file = f'temp_videodata_storage/{video_file}'
     else:
-        video = folder
+        # make directory to store transcript data
+        if not os.path.exists('output_files'):
+            os.mkdir('output_files')
+        video_file = folder
 
     # split audio from video file
-    clip = mp.VideoFileClip(video)
+    clip = mp.VideoFileClip(video_file)
     clip.audio.write_audiofile(audio_file)
 
     # load speech to text model
-    model = whisper.load_model('medium')
+    model = whisper.load_model('base', device='cpu')
 
     # detect language
     audio = whisper.load_audio(audio_file)
     audio = whisper.pad_or_trim(audio)
     mel = whisper.log_mel_spectrogram(audio).to(model.device)
     _, probs = model.detect_language(mel)
-    language = {max(probs, key=probs.get)}
+    language = max(probs, key=probs.get)
     print(language)
 
     # if language not english, translate to english
-    if language != {'en'}:
+    if language != 'en':
         print('language not english, translating...')
         options = dict(beam_size=5, best_of=5)
         translate_options = dict(task='translate', **options)
         result = model.transcribe(audio_file, **translate_options)
-        original_result = model.transcribe(audio_file)
-
-        # add data to dictionary
-        output_data['language'] = result['language']
-        output_data['translation'] = result['text']
-        output_data['segments'] = result['segments']
-        output_data['original'] = original_result['text']
-
     else:
         print('language is english')
         result = model.transcribe(audio_file)
 
-        # add data to dictionary
-        output_data['language'] = result['language']
-        output_data['translation'] = result['text']
-        output_data['segments'] = result['segments']
-
-    
-    # convert segments to integers
-    '''
-    for segment in result['segments']:
-        segment['start'] = int(segment['start'])
-        segment['end'] = int(segment['end'])
-    '''
+    # format data for web
+    output_data = format_data(result, video_id)
 
     if save_output == True:
         # export data to json file
-        with open(f'{video_id}_transcript.json', 'w+') as file:
+        with open(f'output_files/{video_id}_transcript.json', 'w+') as file:
             json.dump(output_data, file)
     
     # remove audio file
     os.remove(audio_file)
-    print(video, ' completed')
+    print(video_id, ' completed')
 
     return output_data
+
+
+
+
