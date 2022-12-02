@@ -6,14 +6,11 @@ RUN apt-get -y install git
 RUN apt-get -y install pip
 RUN apt-get install ffmpeg libsm6 libxext6 -y
 
-COPY src/ /workdir/
-RUN ls --recursive /workdir/
-COPY test_files/ /workdir/
-RUN ls --recursive /workdir/
+COPY /src /src
 COPY .env .
 COPY languages.json .
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-CMD ["python3", "src/run_speech.py", "--folder", "test_files", "--save-output"]
+CMD ["python3", "src/run_speech.py"]

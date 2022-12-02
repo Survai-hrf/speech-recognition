@@ -37,15 +37,10 @@ def perform_speech_to_text(video_id, folder, save_output):
     video_file = f'{video_id}.mp4'
     audio_file = f'{video_id}.wav'
 
-
-
     # if folder of videos is not specified default to:
     if folder == '':
         video_file = f'temp_videodata_storage/{video_file}'
     else:
-        # make directory to store transcript data
-        if not os.path.exists('output_files'):
-            os.mkdir('output_files')
         video_file = folder
 
     # split audio from video file
@@ -78,6 +73,8 @@ def perform_speech_to_text(video_id, folder, save_output):
 
     if save_output == True:
         # export data to json file
+        if not os.path.exists('output_files'):
+            os.mkdir('output_files')      
         with open(f'output_files/{video_id}_transcript.json', 'w+') as file:
             json.dump(output_data, file)
     

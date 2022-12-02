@@ -26,10 +26,14 @@ def parse_args():
 
 
 def process_video(video_id, folder, save_output):
+    count = 0
 
     while True: 
-        
-        os.makedirs(f'temp_videodata_storage', exist_ok=True)
+        if count >= 3:
+            break
+
+        if not os.path.exists('temp_videodata_storage'):
+            os.makedirs(f'temp_videodata_storage')
 
         if folder == '':
             # connect to queue and download video using unique id and mux url
@@ -41,16 +45,18 @@ def process_video(video_id, folder, save_output):
         
         # transcribe video
         print('initializing speech to text model for inference...')
-        perform_speech_to_text(video_id, folder, save_output)
+        transcript = perform_speech_to_text(video_id, folder, save_output)
+        count += 1
 
         if folder == '':
             #send json to web
-            #API_ENDPOINT = "https://glimpse-ouqbsh7ia-survai.vercel.app/api/speech-to-text"
-            #r = requests.post(url=API_ENDPOINT, json=transcript)
+            API_ENDPOINT = "https://glimpse-ouqbsh7ia-survai.vercel.app/api/speech-to-text"
+            r = requests.post(url=API_ENDPOINT, json=transcript)
+            print(r.content)
             print("data sent to AWS")
 
             delete_message(receipt_handle)
-            #shutil.rmtree('temp_videodata_storage')
+            shutil.rmtree('temp_videodata_storage')
             print('message deleted')
         else:
             break
