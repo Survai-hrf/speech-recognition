@@ -15,10 +15,10 @@ def format_data(result, video_id):
         languages = json.load(file)
 
     # store needed data for each segment in dictionary and append to list
-    for i in result['segments']:
+    for segment in result['segments']:
         segments.append({
-            'start': int(i['start']),
-            'text': i['text']
+            'start': int(segment['start']),
+            'text': segment['text']
         })
 
     # build final dictionary 
@@ -43,12 +43,24 @@ def perform_speech_to_text(video_id, folder, save_output):
     else:
         video_file = folder
 
-    # split audio from video file
+    # load video
     clip = mp.VideoFileClip(video_file)
+
+    # if video has no audio, return empty transcription
+    if clip.audio is None:
+        print(f'NO AUDIO DETECTED: {video_file}')
+        return {
+            "uniqueId": video_id,
+            "originalLanguage": "no speech detected",
+            "transcription": "",
+            "segments": []
+        }
+
+    # split audio from video
     clip.audio.write_audiofile(audio_file)
 
     # load speech to text model
-    model = whisper.load_model('base', device='cpu')
+    model = whisper.load_model('large', device='cpu')
 
     # detect language
     audio = whisper.load_audio(audio_file)

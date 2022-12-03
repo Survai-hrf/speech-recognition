@@ -61,6 +61,9 @@ setuptools==65.5.0
 six==1.16.0
 stack-data==0.6.1
 tokenizers==0.13.2
+torch==1.12.1
+torchaudio==0.12.1
+torchvision==0.13.1
 tornado==6.2
 tqdm==4.64.1
 traitlets==5.5.0

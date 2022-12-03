@@ -29,7 +29,7 @@ def process_video(video_id, folder, save_output):
     count = 0
 
     while True: 
-        if count >= 3:
+        if count >= 1:
             break
 
         if not os.path.exists('temp_videodata_storage'):
@@ -46,6 +46,7 @@ def process_video(video_id, folder, save_output):
         # transcribe video
         print('initializing speech to text model for inference...')
         transcript = perform_speech_to_text(video_id, folder, save_output)
+            
         count += 1
 
         if folder == '':
