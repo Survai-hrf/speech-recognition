@@ -30,7 +30,7 @@ def format_data(result, video_id):
     return output
 
 
-def perform_speech_to_text(video_id, folder, save_output):
+def perform_speech_to_text(video_id, folder):
     '''
     Runs speech to text model on a given video and returns data in proper format.
     '''
@@ -49,18 +49,19 @@ def perform_speech_to_text(video_id, folder, save_output):
     # if video has no audio, return empty transcription
     if clip.audio is None:
         print(f'NO AUDIO DETECTED: {video_file}')
-        return {
+        output_data = {
             "uniqueId": video_id,
-            "originalLanguage": "no speech detected",
+            "originalLanguage": "No speech detected.",
             "transcription": "",
             "segments": []
         }
+        return output_data
 
     # split audio from video
     clip.audio.write_audiofile(audio_file)
 
     # load speech to text model
-    model = whisper.load_model('large', device='cpu')
+    model = whisper.load_model('large', model='cpu')
 
     # detect language
     audio = whisper.load_audio(audio_file)
@@ -70,32 +71,30 @@ def perform_speech_to_text(video_id, folder, save_output):
     language = max(probs, key=probs.get)
     print(language)
 
+    # if language confidence is low, skip transcription
+    if probs.get(language) < 0.5:
+        os.remove(audio_file)
+        output_data = {
+            "uniqueId": video_id,
+            "originalLanguage": "Transcription unavailable. Video failed to meet the confidence threshold.",
+            "transcription": "",
+            "segments": []
+        }
+        return output_data
+
     # if language not english, translate to english
     if language != 'en':
         print('language not english, translating...')
-        options = dict(beam_size=5, best_of=5)
-        translate_options = dict(task='translate', **options)
-        result = model.transcribe(audio_file, **translate_options)
+        result = model.transcribe(audio_file, task='translate', beam_size=5, best_of=5)
     else:
         print('language is english')
-        result = model.transcribe(audio_file)
+        result = model.transcribe(audio_file, beam_size=5, best_of=5)
 
     # format data for web
     output_data = format_data(result, video_id)
-
-    if save_output == True:
-        # export data to json file
-        if not os.path.exists('output_files'):
-            os.mkdir('output_files')      
-        with open(f'output_files/{video_id}_transcript.json', 'w+') as file:
-            json.dump(output_data, file)
     
     # remove audio file
     os.remove(audio_file)
     print(video_id, ' completed')
 
     return output_data
-
-
-
-

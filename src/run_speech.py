@@ -1,5 +1,6 @@
 import argparse
 import os
+import json
 import requests
 import shutil
 import mimetypes
@@ -45,8 +46,15 @@ def process_video(video_id, folder, save_output):
         
         # transcribe video
         print('initializing speech to text model for inference...')
-        transcript = perform_speech_to_text(video_id, folder, save_output)
-            
+        transcript = perform_speech_to_text(video_id, folder)
+
+        if save_output == True:
+            # export data to json file
+            if not os.path.exists('output_files'):
+                os.mkdir('output_files')      
+            with open(f'output_files/{video_id}_transcript.json', 'w+') as file:
+                json.dump(transcript, file)
+
         count += 1
 
         if folder == '':
