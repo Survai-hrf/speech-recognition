@@ -27,12 +27,8 @@ def parse_args():
 
 
 def process_video(video_id, folder, save_output):
-    count = 0
-
+   
     while True: 
-        if count >= 1:
-            break
-
         if not os.path.exists('temp_videodata_storage'):
             os.makedirs(f'temp_videodata_storage')
 
@@ -54,8 +50,6 @@ def process_video(video_id, folder, save_output):
                 os.mkdir('output_files')      
             with open(f'output_files/{video_id}_transcript.json', 'w+') as file:
                 json.dump(transcript, file)
-
-        count += 1
 
         if folder == '':
             #send json to web
