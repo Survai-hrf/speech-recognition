@@ -1,0 +1,76 @@
+{
+    "videos/SKv-FNBtPfg&t_55_74.mp4": {
+        "language": "fr",
+        "detected_language": "nn",
+        "confidence": 0.13250073790550232,
+        "confidence_on_correct_language": 0.08092118054628372,
+        "correct": false
+    },
+    "videos/sGjCxVA8mCE_0_30.mp4": {
+        "language": "my",
+        "detected_language": "ko",
+        "confidence": 0.5220446586608887,
+        "confidence_on_correct_language": 0.00018990953685715795,
+        "correct": false
+    },
+    "videos/ytVVb9bW404_100_130.mp4": {
+        "language": "zh",
+        "detected_language": "mi",
+        "confidence": 0.5541367530822754,
+        "confidence_on_correct_language": 0.002348701935261488,
+        "correct": false
+    },
+    "videos/J00re2IH-F4_15_45.mp4": {
+        "language": "en",
+        "detected_language": "en",
+        "confidence": 0.6967111229896545,
+        "confidence_on_correct_language": 0.6967111229896545,
+        "correct": true
+    },
+    "videos/zktjp_w6MLA_84_114.mp4": {
+        "language": "es",
+        "detected_language": "es",
+        "confidence": 0.5432506799697876,
+        "confidence_on_correct_language": 0.5432506799697876,
+        "correct": true
+    },
+    "videos/E0YpoFj-Ces_0_30.mp4": {
+        "language": "de",
+        "detected_language": "de",
+        "confidence": 0.7134805917739868,
+        "confidence_on_correct_language": 0.7134805917739868,
+        "correct": true
+    },
+    "videos/_31I0c1WMRA_30_60.mp4": {
+        "language": "zh",
+        "detected_language": "zh",
+        "confidence": 0.9887056946754456,
+        "confidence_on_correct_language": 0.9887056946754456,
+        "correct": true
+    },
+    "videos/LddHRE_5SWE_15_45.mp4": {
+        "language": "ko",
+        "detected_language": "ko",
+        "confidence": 0.922035276889801,
+        "confidence_on_correct_language": 0.922035276889801,
+        "correct": true
+    },
+    "videos/Lx9LzYosIco_10_40.mp4": {
+        "language": "uk",
+        "detected_language": "ru",
+        "confidence": 0.5270262956619263,
+        "confidence_on_correct_language": 0.3677096664905548,
+        "correct": false
+    },
+    "videos/eXjd7GkHKfU_135_165.mp4": {
+        "language": "ja",
+        "detected_language": "ko",
+        "confidence": 0.21682201325893402,
+        "confidence_on_correct_language": 0.20985989272594452,
+        "correct": false
+    },
+    "average_failure_confidence": 0.3905060917139053,
+    "average_correct_confidence": 0.7728366732597352,
+    "lowest_correct_confidence": 0.5432506799697876,
+    "highest_failed_confidence": 0.5541367530822754
+}

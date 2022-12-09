@@ -30,7 +30,7 @@ def format_data(result, video_id):
     return output
 
 
-def perform_speech_to_text(video_id, folder):
+def perform_speech_to_text(video_id, folder, model):
     '''
     Runs speech to text model on a given video and returns data in proper format.
     '''
@@ -60,9 +60,6 @@ def perform_speech_to_text(video_id, folder):
     # split audio from video
     clip.audio.write_audiofile(audio_file)
 
-    # load speech to text model
-    model = whisper.load_model('large', model='cpu')
-
     # detect language
     audio = whisper.load_audio(audio_file)
     audio = whisper.pad_or_trim(audio)
@@ -72,7 +69,7 @@ def perform_speech_to_text(video_id, folder):
     print(language)
 
     # if language confidence is low, skip transcription
-    if probs.get(language) < 0.5:
+    if probs.get(language) < 0.54:
         os.remove(audio_file)
         output_data = {
             "uniqueId": video_id,

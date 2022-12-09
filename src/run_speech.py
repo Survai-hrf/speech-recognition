@@ -1,3 +1,4 @@
+import whisper
 import argparse
 import os
 import json
@@ -26,7 +27,7 @@ def parse_args():
     return args
 
 
-def process_video(video_id, folder, save_output):
+def process_video(video_id, model, folder, save_output):
    
     while True: 
         if not os.path.exists('temp_videodata_storage'):
@@ -42,7 +43,7 @@ def process_video(video_id, folder, save_output):
         
         # transcribe video
         print('initializing speech to text model for inference...')
-        transcript = perform_speech_to_text(video_id, folder)
+        transcript = perform_speech_to_text(video_id, folder, model)
 
         if save_output == True:
             # export data to json file
@@ -69,10 +70,13 @@ if __name__ == '__main__':
 
     args = parse_args()
 
+    # load speech to text model
+    model = whisper.load_model('large', model='cpu')
+
     # if no folder is provided
     if args.folder == '':
         video_id = 1
-        process_video(video_id, args.folder, args.save_output)
+        process_video(video_id, model, args.folder, args.save_output)
 
     else:
         #iterate folder and all subfolders looking for videos
@@ -98,3 +102,4 @@ if __name__ == '__main__':
                             print(f"broken video: {filepath}")
                             print(e)
                             print(traceback.format_exc())       
+

@@ -4,7 +4,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info
-*.json
 .env
 .pytest_cache
 .ipynb_checkpoints
