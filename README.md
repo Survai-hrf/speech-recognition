@@ -31,16 +31,16 @@ This repo contains the SurvAI speech to text model along with the meta script th
 The gpu_requirements.txt will still work if running on cpu as the model will default to cpu usage if no gpu is detected, but the gpu packages will take up slightly more space on your hard drive, so it is recommended to use this method if you do not intend to use a gpu.
 
 
-## API Description
+## AWS Queue Description
 
-The API endpoint accepts the following parameters:
+The AWS Queue accepts the following parameters:
 1. ) Mux url (ex: https://stream.mux.com/piyBzpj801bLPqwUsAZj2oQNEeSJVZNkNPTf3zuuXSaE/high.mp4?download=test.mp4)
 
 2. ) Unique video id
 
-The api will then download the video, split the audio, process the audio, and send the json data back to the web as described in the introduction.
+The AWS Queue will then download the video, split the audio, process the audio, and send the json data back to the web as described in the introduction.
 
-NOTE: to use the api endpoint, you must be connected to the appropriate AWS queue. To connect to the AWS queue, you must have the following information in a .env file:
+NOTE: You must be connected to the appropriate AWS queue. To connect to the AWS queue, you must have the following information in a .env file:
 - REGION_NAME=” ”
 - AWS_ACCESS_KEY_ID=” ”
 - AWS_SECRET_ACCESS_KEY=” “
