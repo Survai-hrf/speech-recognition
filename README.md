@@ -34,7 +34,7 @@ The gpu_requirements.txt will still work if running on cpu as the model will def
 ## AWS Queue Description
 
 The AWS Queue accepts the following parameters:
-1. ) Mux url (ex: https://stream.mux.com/piyBzpj801bLPqwUsAZj2oQNEeSJVZNkNPTf3zuuXSaE/high.mp4?download=test.mp4)
+1. ) Mux url (ex: https://stream.mux.com/{MUX_PLAYBACK_ID}/{HIGHEST_AVAILABLE_RESOLUTION}.mp4)
 
 2. ) Unique video id
 
