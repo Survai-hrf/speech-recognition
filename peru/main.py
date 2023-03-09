@@ -1,15 +1,18 @@
-#from src.transcribe import perform_speech_to_text
-
 import os
+import pandas as pd
+
+from src.transcribe import perform_speech_to_text
 
 
-dir = 'Downloads'
+dir = 'videos'
 
 # make list of files
 files = os.listdir(dir)
 
+csv_list = []
 for file in files:
-    print(f'{dir}/{file}')
-
     # perform transcription
-    #perform_speech_to_text(base_name)
+    print(file)
+    output_data = perform_speech_to_text(file, 'base')
+    print(output_data)
+    csv_list.append(output_data)

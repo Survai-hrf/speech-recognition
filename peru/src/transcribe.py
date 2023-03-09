@@ -12,7 +12,6 @@ def format_data(english_result, original_result, video_id):
 
     # build dictionary
     output['Content ID'] = video_id
-    output['Link'] = None
     output['english transcription'] = english_result['text']
 
     if original_result == None:
@@ -23,13 +22,16 @@ def format_data(english_result, original_result, video_id):
     return output
 
 
-def perform_speech_to_text(file_path, model):
+def perform_speech_to_text(file_name, model):
     '''
     Runs speech to text model on a given video and returns data in proper format.
     '''
+    dir = 'videos'
+    file_path = f"{dir}/{file_name}"
     video_file = file_path
     audio_file = os.path.basename(file_path)
     audio_file = f"{os.path.splitext(audio_file)[0]}.wav"
+    model = whisper.load_model(model)
 
     # load video
     clip = mp.VideoFileClip(video_file)
@@ -52,6 +54,7 @@ def perform_speech_to_text(file_path, model):
 
     # if language confidence is low, skip transcription
     if probs.get(language) < 0.54:
+        print("language confidence too low, quitting...")
         os.remove(audio_file)
         return
 
@@ -59,6 +62,7 @@ def perform_speech_to_text(file_path, model):
     if language != 'en':
         print('language not english, translating...')
         english_result = model.transcribe(audio_file, task='translate', beam_size=5, best_of=5)
+        print('transcribing original language')
         original_result = model.transcribe(audio_file, beam_size=5, best_of=5)
     else:
         print('language is english')
@@ -66,11 +70,10 @@ def perform_speech_to_text(file_path, model):
         original_result = None
 
     # format data for web
-    output_data = format_data(english_result, original_result, file_path)
+    output_data = format_data(english_result, original_result, os.path.splitext(file_name)[0])
     
     # remove audio file
     os.remove(audio_file)
     print(file_path, ' completed')
-    print(output_data)
 
     return output_data
