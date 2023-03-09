@@ -9,7 +9,7 @@ from cv2 import VideoCapture
 import traceback
 mimetypes.init()
 
-from openai_whisper.src.transcribe import perform_speech_to_text
+from src.transcribe.transcribe import perform_speech_to_text
 from connect_download.connect_and_download import connect_and_download, delete_message
 
 
