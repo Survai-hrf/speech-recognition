@@ -12,12 +12,12 @@ def format_data(english_result, original_result, video_id):
 
     # build dictionary
     output['Content ID'] = video_id
-    output['english transcription'] = english_result['text']
+    output['English Transcription'] = english_result['text']
 
     if original_result == None:
-        output['original language transcription'] = original_result
+        output['Original Language Transcription'] = original_result
     else:
-        output['original language transcription'] = original_result['text']
+        output['Original Language Transcription'] = original_result['text']
 
     return output
 
